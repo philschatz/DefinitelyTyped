@@ -6,13 +6,13 @@
 
 export as namespace nearley;
 
-export class Parser {
+export class Parser<T> {
     /**
      * Reserved token for indicating a parse fail.
      */
     static fail: {};
 
-    grammar: Grammar;
+    grammar: Grammar<T>;
     options: ParserOptions;
     lexer: Lexer;
     lexerState?: LexerState;
@@ -21,11 +21,11 @@ export class Parser {
      * An array of possible parsings. Each element is the thing returned by your grammar.
      *
      * Note that this is undefined before the first feed() call.
-     * It isn't typed as `any[] | undefined` to spare you the null checks when it's definitely an array.
+     * It isn't typed as `T[] | undefined` to spare you the null checks when it's definitely an array.
      */
-    results: any[];
+    results: T[];
 
-    constructor(grammar: Grammar, options?: ParserOptions);
+    constructor(grammar: Grammar<T>, options?: ParserOptions);
 
     /**
      * The Parser object can be fed data in parts with .feed(data).
@@ -37,7 +37,7 @@ export class Parser {
      * whose offset property is the index of the offending token.
      */
     feed(chunk: string): this;
-    finish(): any[];
+    finish(): T[];
     restore(column: {[key: string]: any, lexerState: LexerState}): void;
     save(): {[key: string]: any, lexerState: LexerState};
 }
@@ -60,8 +60,8 @@ export class Rule {
     toString(withCursorAt?: number): string;
 }
 
-export class Grammar {
-    static fromCompiled(rules: CompiledRules): Grammar;
+export class Grammar<T> {
+    static fromCompiled<T>(rules: CompiledRules<T>): Grammar<T>;
 
     rules: Rule[];
     start: string;
@@ -71,7 +71,7 @@ export class Grammar {
     constructor(rules: Rule[]);
 }
 
-export interface CompiledRules {
+export interface CompiledRules<T> {
     Lexer?: Lexer;
     ParserStart: string;
     ParserRules: ParserRule[];
